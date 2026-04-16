@@ -176,6 +176,45 @@ GET /api/collection
 
 ---
 
+## Item States (`ims_items.state`)
+
+| State | Meaning |
+|---|---|
+| `PIB` | Deployed — item is active at a PID (location format: `PID{n}-{suffix}`) |
+| `WIB` | In warehouse — available stock |
+| `POB` | In transit — on an open purchase order, not yet received |
+| `null` | Inactive / dead — retired or consumed |
+
+`location` for PIB items contains the PID string (e.g. `PID138-LRD`). Group by `location` to get per-PID inventory breakdown.
+
+---
+
+## Vendors Dashboard (Dashboard ID: 22)
+
+Live at: `https://metabase-production-6394.up.railway.app/dashboard/22`
+
+Filter: Vendor Code (`string/=`, parameter ID `b3f9a1c2`)
+
+| Card | ID | Type | Source | Notes |
+|---|---|---|---|---|
+| Total Purchase Amount | 228 | scalar | `ims_po` | sum(amount), ₹ prefix |
+| Items Deployed (PIB) | 229 | scalar | `ims_items` + `ims_fsins` | state = PIB |
+| In Warehouse (WIB) | 230 | scalar | `ims_items` + `ims_fsins` | state = WIB |
+| Inactive Items | 231 | scalar | `ims_items` + `ims_fsins` | state IS NULL |
+| Total FSINs | 232 | scalar | `ims_fsins` | count |
+| In Transit (POB) | 233 | scalar | `ims_items` + `ims_fsins` | state = POB |
+| Items by State | 234 | bar | `ims_items` + `ims_fsins` | count breakout by state |
+| PIDs with Vendor Inventory | 235 | table | SQL (3-table join) | PIB items grouped by location, with count + value |
+| Purchase Order History | 236 | table | `ims_po` | sorted by date desc |
+
+**Filter wiring:**
+- Cards sourced from `ims_po`: target `["dimension", ["field", 2799, ...]]` (vendor_code on ims_po)
+- Cards sourced from `ims_items` + `ims_fsins` join: target `["dimension", ["field", 2761, {"join-alias": "ims_fsins"}]]`
+- Cards sourced from `ims_fsins` directly: target `["dimension", ["field", 2761, ...]]`
+- SQL cards: target `["variable", ["template-tag", "vendor_code"]]` — use `[[AND f.vendor_code = {{vendor_code}}]]` optional syntax
+
+---
+
 ## Learnings Log
 
 | Date | Learning |
@@ -184,3 +223,5 @@ GET /api/collection
 | 2026-04-16 | MCP sub-agents do not inherit MCP tools from the parent session — use direct API calls or main-thread MCP tool calls |
 | 2026-04-16 | Metabase instance redirects HTTP to HTTPS — always use `https://` |
 | 2026-04-16 | GUI questions auto-wire to dashboard dropdown filters; SQL questions require field filter variables |
+| 2026-04-16 | For 3-table joins with aggregation (e.g. items + fsins + polines), fall back to SQL — GUI join chaining gets unwieldy |
+| 2026-04-16 | Dashboard filter parameter_mappings must use join-alias when the filtered field comes from a joined table in a GUI question |
