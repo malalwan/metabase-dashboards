@@ -78,6 +78,16 @@ Views in the `views` schema are pre-aggregated and **do not guarantee unique row
 
 ---
 
+## Dashboard Layout Rules
+
+1. **No empty gaps** — every row must be fully filled. If placing cards leaves dead space, stretch the nearest card (preferably a table) to cover it.
+2. **Tables get extra height** — any table card with multiple rows should be tall enough to show content without scrolling. Prefer `h=9` or more for tables; increase further if row count warrants it.
+3. **Card dimensions follow CX Watch** — scalar: `w=6 h=3`, chart: `w=12 h=6`, table: `w=12–24 h=8+`. Grid is 24 columns wide.
+4. **Max 4 scalar cards per row.**
+5. After pushing a layout via API, the user may manually adjust card sizes/positions — do not overwrite those adjustments in subsequent updates unless explicitly asked.
+
+---
+
 ## Question Creation Rules
 
 ### 1. Always prefer GUI (MBQL) questions over SQL
