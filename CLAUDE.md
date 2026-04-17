@@ -235,3 +235,5 @@ Filter: Vendor Code (`string/=`, parameter ID `b3f9a1c2`)
 | 2026-04-16 | GUI questions auto-wire to dashboard dropdown filters; SQL questions require field filter variables |
 | 2026-04-16 | For 3-table joins with aggregation (e.g. items + fsins + polines), fall back to SQL — GUI join chaining gets unwieldy |
 | 2026-04-16 | Dashboard filter parameter_mappings must use join-alias when the filtered field comes from a joined table in a GUI question |
+| 2026-04-17 | `"values_query_type": "list"` must be set on a dashboard parameter for the filter to render as a dropdown — without it, it shows as a text field even when `values_source_type` is set |
+| 2026-04-17 | For nullable SQL filters with multi-select: use `[[AND col = ANY(STRING_TO_ARRAY({{var}}, ','))]]` — the optional block drops the clause when empty; STRING_TO_ARRAY handles comma-joined multi-values |
