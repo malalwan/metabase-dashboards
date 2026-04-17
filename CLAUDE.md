@@ -9,7 +9,7 @@ Keep it updated as new tables, patterns, and learnings are discovered.
 
 ```bash
 claude mcp add metabase \
-  --env METABASE_URL=https://metabase-production-6394.up.railway.app \
+  --env METABASE_URL=http://metabase-production-6394.up.railway.app \
   --env METABASE_API_KEY=<api_key> \
   -- npx @cognitionai/metabase-mcp-server --all
 ```
